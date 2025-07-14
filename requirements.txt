@@ -1,0 +1,4 @@
+msgspec
+numpy
+opencv-python
+black
