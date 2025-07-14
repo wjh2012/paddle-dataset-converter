@@ -2,3 +2,5 @@ msgspec
 numpy
 opencv-python
 black
+pillow
+tqdm
