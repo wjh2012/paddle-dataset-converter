@@ -35,7 +35,9 @@ class Runner:
         label_paths = self.data_loader.get_all_file_paths(self.label_dir, ext=".json")
         image_paths = self.data_loader.get_all_image_file_paths(self.image_dir)
 
-        image_file_map = {os.path.basename(p): p for p in image_paths}
+        image_file_map = {
+            os.path.splitext(os.path.basename(p))[0]: p for p in image_paths
+        }
 
         os.makedirs(image_save_dir, exist_ok=True)
 
@@ -74,13 +76,14 @@ class Runner:
 
     def process_single_label(self, label_path, image_file_map, image_save_dir):
         label_filename = os.path.basename(label_path)
-        image_filename = label_filename.replace(".json", ".jpg")
+        basename_without_ext = os.path.splitext(label_filename)[0]
 
-        if image_filename not in image_file_map:
-            print(f"[경고] 이미지 파일 없음: {image_filename}")
+        if basename_without_ext not in image_file_map:
+            print(f"[경고] 이미지 파일 없음: {basename_without_ext}")
             return []
 
-        image_path = image_file_map[image_filename]
+        image_path = image_file_map[basename_without_ext]
+        image_filename = os.path.basename(image_path)
 
         try:
             label_data = self.data_loader.load_label_data(label_path)
@@ -89,7 +92,7 @@ class Runner:
                 print(f"[경고] 이미지 읽기 실패: {image_path}")
                 return []
 
-            # crop_and_save_words에서 (crop된 파일명, 단어) 리스트 반환해야 함
+            # crop_and_save_words에서 (crop된 파일명, 단어) 리스트 반환
             text_entries = self.data_processor.crop_and_save_words(
                 label_data, image, image_filename, image_save_dir
             )
