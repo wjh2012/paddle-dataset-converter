@@ -5,7 +5,7 @@ import msgspec
 import numpy as np
 from PIL import Image
 
-from ocr_data.data_structure import OcrPubDataset
+from one_by_one.ocr_data.data_structure import OcrPubDataset
 
 
 def get_all_image_file_paths(root_dir: str):

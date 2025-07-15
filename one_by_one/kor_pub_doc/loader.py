@@ -5,7 +5,7 @@ import msgspec
 import numpy as np
 from PIL import Image
 
-from kor_pub_doc.data_structure import KorPubDataset
+from one_by_one.kor_pub_doc.data_structure import KorPubDataset
 
 
 def get_all_image_file_paths(root_dir: str):

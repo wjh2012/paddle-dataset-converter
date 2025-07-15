@@ -2,7 +2,7 @@ import os
 
 import cv2
 
-from kor_pub_doc.data_structure import KorPubDataset
+from one_by_one.kor_pub_doc.data_structure import KorPubDataset
 
 
 def crop_and_save_words(label_data: KorPubDataset, image, image_filename, save_dir):

@@ -2,7 +2,7 @@ import os
 import cv2
 import numpy as np
 
-from finance_ocr.data_structure import FinanceOcrDataset
+from one_by_one.finance_ocr.data_structure import FinanceOcrDataset
 
 
 def crop_and_save_words(label_data: FinanceOcrDataset, image, image_filename, save_dir):

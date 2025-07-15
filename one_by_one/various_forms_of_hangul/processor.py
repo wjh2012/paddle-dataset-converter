@@ -2,7 +2,9 @@ import os
 
 import cv2
 
-from various_forms_of_hangul.data_structure import VariousFormsOfHangulDataset
+from one_by_one.various_forms_of_hangul.data_structure import (
+    VariousFormsOfHangulDataset,
+)
 
 
 def crop_and_save_words(

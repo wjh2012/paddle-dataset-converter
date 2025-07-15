@@ -5,7 +5,7 @@ import msgspec
 import numpy as np
 from PIL import Image, ExifTags
 
-from finance_ocr.data_structure import FinanceOcrDataset
+from one_by_one.finance_ocr.data_structure import FinanceOcrDataset
 
 
 def get_all_image_file_paths(root_dir: str):

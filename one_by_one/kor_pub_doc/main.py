@@ -2,13 +2,13 @@ import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
 
-from finance_ocr.loader import (
-    load_label_data,
+from one_by_one.kor_pub_doc.loader import (
     get_all_file_paths,
     get_all_image_file_paths,
+    load_label_data,
     load_image_data,
 )
-from finance_ocr.processor import crop_and_save_words
+from one_by_one.kor_pub_doc.processor import crop_and_save_words
 
 
 def main(label_dir: str, image_dir: str, save_dir: str):
@@ -80,8 +80,8 @@ def process_single_label(label_path, image_file_map, save_dir):
 
 
 if __name__ == "__main__":
-    image_dir = r"C:\Users\wjh\Downloads\금융업특화OCR\원천데이터"
-    label_dir = r"C:\Users\wjh\Downloads\금융업특화OCR\라벨링데이터"
+    image_dir = r"C:\Users\wjh\Downloads\공공행정문서\원천데이터"
+    label_dir = r"C:\Users\wjh\Downloads\공공행정문서\라벨링데이터"
     save_dir = r"C:\Users\wjh\Desktop\temp_save"
 
     main(label_dir=label_dir, image_dir=image_dir, save_dir=save_dir)

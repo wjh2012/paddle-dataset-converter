@@ -2,13 +2,13 @@ import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
 
-from ocr_data.loader import (
-    load_label_data,
+from one_by_one.various_forms_of_hangul.loader import (
     get_all_file_paths,
     get_all_image_file_paths,
+    load_label_data,
     load_image_data,
 )
-from ocr_data.processor import crop_and_save_words
+from one_by_one.various_forms_of_hangul.processor import crop_and_save_words
 
 
 def main(label_dir: str, image_dir: str, save_dir: str):
@@ -80,8 +80,10 @@ def process_single_label(label_path, image_file_map, save_dir):
 
 
 if __name__ == "__main__":
-    image_dir = r"C:\Users\wjh\Downloads\OCR데이터(공공)\01.원천데이터"
-    label_dir = r"C:\Users\wjh\Downloads\OCR데이터(공공)\02.라벨링데이터"
+    image_dir = (
+        r"C:\Users\wjh\Downloads\다양한형태의한글문자\원천데이터\[원천]Training_인쇄체"
+    )
+    label_dir = r"C:\Users\wjh\Downloads\다양한형태의한글문자\라벨링데이터"
     save_dir = r"C:\Users\wjh\Desktop\temp_save"
 
     main(label_dir=label_dir, image_dir=image_dir, save_dir=save_dir)

@@ -1,7 +1,7 @@
 import os
 import cv2
 
-from ocr_data.data_structure import OcrPubDataset
+from one_by_one.ocr_data.data_structure import OcrPubDataset
 
 
 def crop_and_save_words(label_data: OcrPubDataset, image, image_filename, save_dir):

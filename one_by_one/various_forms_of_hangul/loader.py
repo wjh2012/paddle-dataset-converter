@@ -5,7 +5,9 @@ import msgspec
 import numpy as np
 from PIL import Image
 
-from various_forms_of_hangul.data_structure import VariousFormsOfHangulDataset
+from one_by_one.various_forms_of_hangul.data_structure import (
+    VariousFormsOfHangulDataset,
+)
 
 
 def get_all_image_file_paths(root_dir: str):
