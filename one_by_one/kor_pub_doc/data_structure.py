@@ -15,6 +15,6 @@ class Annotation(msgspec.Struct):
     bbox: List[int] = msgspec.field(name="annotation.bbox")
 
 
-class KorPubDataset(msgspec.Struct):
+class KorPubDocData(msgspec.Struct):
     images: List[Image]
     annotations: List[Annotation]

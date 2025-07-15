@@ -2,48 +2,54 @@ import os
 import cv2
 import numpy as np
 
-from one_by_one.finance_ocr.data_structure import FinanceOcrDataset
+from one_by_one.finance_ocr.data_structure import FinanceOcrData
+from one_by_one.processor import OcrDataProcessor
 
 
-def crop_and_save_words(label_data: FinanceOcrDataset, image, image_filename, save_dir):
-    results = []
+class FinanceOcrProcessor(OcrDataProcessor):
+    def crop_and_save_words(
+        self, label_data: FinanceOcrData, image, image_filename, save_dir
+    ):
+        results = []
 
-    # FinanceOcrDataset의 annotations 안에 polygons가 있음
-    for ann in label_data.annotations:
-        for idx, polygon in enumerate(ann.polygons):
-            text = polygon.text
-            points = polygon.points
+        # FinanceOcrDataset의 annotations 안에 polygons가 있음
+        for ann in label_data.annotations:
+            for idx, polygon in enumerate(ann.polygons):
+                text = polygon.text
+                points = polygon.points
 
-            if not text:
-                continue
+                if not text:
+                    continue
 
-            # points는 List[List[int]] 형태, 예: [[x1, y1], [x2, y2], ...]
-            x_list = [int(p[0]) for p in points]
-            y_list = [int(p[1]) for p in points]
+                # points는 List[List[int]] 형태, 예: [[x1, y1], [x2, y2], ...]
+                x_list = [int(p[0]) for p in points]
+                y_list = [int(p[1]) for p in points]
 
-            x_min = max(0, min(x_list))
-            x_max = max(0, max(x_list))
-            y_min = max(0, min(y_list))
-            y_max = max(0, max(y_list))
+                x_min = max(0, min(x_list))
+                x_max = max(0, max(x_list))
+                y_min = max(0, min(y_list))
+                y_max = max(0, max(y_list))
 
-            # 이미지 크기 내에서 clipping
-            h, w = image.shape[:2]
-            x_max = min(w, x_max)
-            y_max = min(h, y_max)
+                # 이미지 크기 내에서 clipping
+                h, w = image.shape[:2]
+                x_max = min(w, x_max)
+                y_max = min(h, y_max)
 
-            cropped_img = image[y_min:y_max, x_min:x_max]
+                cropped_img = image[y_min:y_max, x_min:x_max]
 
-            cropped_filename = f"{os.path.splitext(image_filename)[0]}_word_{idx+1}.jpg"
-            save_path = os.path.join(save_dir, cropped_filename)
-            cv2.imwrite(save_path, cropped_img)
+                cropped_filename = (
+                    f"{os.path.splitext(image_filename)[0]}_word_{idx+1}.jpg"
+                )
+                save_path = os.path.join(save_dir, cropped_filename)
+                cv2.imwrite(save_path, cropped_img)
 
-            results.append((cropped_filename, text))
+                results.append((cropped_filename, text))
 
-    return results
+        return results
 
 
 def crop_and_save_words_tmp(
-    label_data: FinanceOcrDataset, image, image_filename, save_dir
+    label_data: FinanceOcrData, image, image_filename, save_dir
 ):
     results = []
     h, w = image.shape[:2]

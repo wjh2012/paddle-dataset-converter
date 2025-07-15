@@ -16,6 +16,6 @@ class Bbox(msgspec.Struct):
     y: List[int]
 
 
-class OcrPubDataset(msgspec.Struct):
+class StandardOcrData(msgspec.Struct):
     images: Image = msgspec.field(name="Images")
     bbox: List[Bbox] = msgspec.field(name="Bbox")

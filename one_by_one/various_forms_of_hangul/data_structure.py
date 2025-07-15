@@ -35,7 +35,7 @@ class Text(msgspec.Struct):
     word: List[Word]
 
 
-class VariousFormsOfHangulDataset(msgspec.Struct):
+class VariousFormsOfHangulData(msgspec.Struct):
     # info:Info
     image: Image
     # license: License

@@ -21,6 +21,6 @@ class Annotation(msgspec.Struct):
     polygons: List[Polygon]
 
 
-class FinanceOcrDataset(msgspec.Struct):
+class FinanceOcrData(msgspec.Struct):
     images: List[Image]
     annotations: List[Annotation]
