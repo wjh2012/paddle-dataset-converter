@@ -156,7 +156,7 @@ if __name__ == "__main__":
     print("모든 데이터셋에서 수집된 전체 문자:", all_results)
 
     # ✅ 파일로 저장 (한 줄에 한 문자)
-    with open("all_results.txt", "w", encoding="utf-8") as f:
+    with open("label_char_set.txt", "w", encoding="utf-8") as f:
         for char in sorted(all_results):
             f.write(char + "\n")
 
