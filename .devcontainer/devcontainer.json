@@ -1,0 +1,11 @@
+{
+  "name": "paddle-dataset-converter-container",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "customizations" : {
+    "jetbrains" : {
+      "backend" : "PyCharm"
+    }
+  }
+}
