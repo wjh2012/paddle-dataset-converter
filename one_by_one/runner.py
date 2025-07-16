@@ -4,7 +4,12 @@ from typing import TypeVar, Type
 
 from tqdm import tqdm
 
-from one_by_one.data_loader import OcrDataLoader
+from one_by_one.data_loader import (
+    OcrDataLoader,
+    get_all_file_paths,
+    get_all_image_file_paths,
+    load_image_data,
+)
 from one_by_one.processor import OcrDataProcessor
 
 T = TypeVar("T")
@@ -32,8 +37,8 @@ class Runner:
         image_save_dir = os.path.join(self.save_dir, "images")
         txt_save_path = os.path.join(self.save_dir, "train.txt")
 
-        label_paths = self.data_loader.get_all_file_paths(self.label_dir, ext=".json")
-        image_paths = self.data_loader.get_all_image_file_paths(self.image_dir)
+        label_paths = get_all_file_paths(self.label_dir, ext=".json")
+        image_paths = get_all_image_file_paths(self.image_dir)
 
         image_file_map = {
             os.path.splitext(os.path.basename(p))[0]: p for p in image_paths
@@ -87,7 +92,7 @@ class Runner:
 
         try:
             label_data = self.data_loader.load_label_data(label_path)
-            image = self.data_loader.load_image_data(image_path)
+            image = load_image_data(image_path)
             if image is None:
                 print(f"[경고] 이미지 읽기 실패: {image_path}")
                 return []
