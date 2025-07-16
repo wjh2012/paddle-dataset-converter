@@ -3,9 +3,8 @@ import msgspec
 from one_to_many.kor_font.data_structure import KorFontDataset
 
 
-def read(label_dir, image_dir):
+def read(label_dir):
     read_label_file(label_dir)
-    read_image_dir(image_dir)
 
 
 def read_label_file(label_file_path: str):
@@ -13,10 +12,6 @@ def read_label_file(label_file_path: str):
         json_bytes = f.read()
     data: KorFontDataset = msgspec.json.decode(json_bytes, type=KorFontDataset)
     return data
-
-
-def read_image_dir(image_dir):
-    pass
 
 
 if __name__ == "__main__":
