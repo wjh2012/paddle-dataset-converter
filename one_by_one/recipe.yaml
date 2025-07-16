@@ -1,20 +1,20 @@
 ocr_data_public:
-  data_structure: one_by_one.standard_ocr_data.data_structure.StandardOcrData
-  processor_class: one_by_one.standard_ocr_data.processor.StandardOcrDataProcessor
+  data_structure: one_by_one.ocr_data_public.data_structure.OcrDataPublic
+  processor_class: one_by_one.ocr_data_public.processor.StandardOcrDataProcessor
   image_dir: C:\Users\wjh\Downloads\OCR데이터(공공)\Sample\01.원천데이터
   label_dir: C:\Users\wjh\Downloads\OCR데이터(공공)\Sample\02.라벨링데이터
   save_dir: C:\Users\wjh\Desktop\dataset\ocr_data_public
 
 ocr_data_education:
-  data_structure: one_by_one.standard_ocr_data.data_structure.StandardOcrData
-  processor_class: one_by_one.standard_ocr_data.processor.StandardOcrDataProcessor
+  data_structure: one_by_one.ocr_data_education.data_structure.OcrDataEducation
+  processor_class: one_by_one.ocr_data_education.processor.StandardOcrDataProcessor
   image_dir: C:\Users\wjh\Downloads\OCR데이터(교육)\Sample\01.원천데이터
   label_dir: C:\Users\wjh\Downloads\OCR데이터(교육)\Sample\02.라벨링데이터
   save_dir: C:\Users\wjh\Desktop\dataset\ocr_data_education
 
 ocr_data_finance:
-  data_structure: one_by_one.standard_ocr_data.data_structure.StandardOcrData
-  processor_class: one_by_one.standard_ocr_data.processor.StandardOcrDataProcessor
+  data_structure: one_by_one.ocr_data_finance.data_structure.OcrDataFinance
+  processor_class: one_by_one.ocr_data_finance.processor.StandardOcrDataProcessor
   image_dir: C:\Users\wjh\Downloads\OCR데이터(금융및물류)\Sample\01.원천데이터
   label_dir: C:\Users\wjh\Downloads\OCR데이터(금융및물류)\Sample\02.라벨링데이터
   save_dir: C:\Users\wjh\Desktop\dataset\ocr_data_finance
