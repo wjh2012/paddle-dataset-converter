@@ -1,10 +1,10 @@
 def convert():
     # 첫 번째 파일 읽기 (list -> set 변환)
-    with open("basic.txt", "r", encoding="utf-8") as f:
+    with open("basic-ksx1001.txt", "r", encoding="utf-8") as f:
         ksx1001 = set(line.strip() for line in f if line.strip())
 
     # 두 번째 파일 읽기 (list -> set 변환)
-    with open("ppocrv5_korean_dict.txt", "r", encoding="utf-8") as f:
+    with open("all_results.txt", "r", encoding="utf-8") as f:
         ppocrv5_korean_dict = set(line.strip() for line in f if line.strip())
 
     # ksx1001에만 있는 글자
