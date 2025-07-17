@@ -2,8 +2,8 @@ import os
 
 import cv2
 
-from one_by_one.kor_pub_doc.data_structure import KorPubDocData
-from one_by_one.processor import OcrDataProcessor
+from rec.one_by_one.kor_pub_doc.data_structure import KorPubDocData
+from rec.one_by_one.processor import OcrDataProcessor
 
 
 class KorPubDocDataProcessor(OcrDataProcessor):

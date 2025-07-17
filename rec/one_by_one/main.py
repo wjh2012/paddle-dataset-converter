@@ -7,7 +7,7 @@ import argparse
 import importlib
 import yaml
 
-from one_by_one.runner import Runner
+from rec.one_by_one.runner import Runner
 
 
 def load_class(full_class_string):

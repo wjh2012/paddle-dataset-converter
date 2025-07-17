@@ -1,6 +1,6 @@
 import os
 
-from one_to_many.kor_font.data_structure import KorFontDataset
+from rec.one_to_many.kor_font.data_structure import KorFontDataset
 
 
 def make_train_txt(dataset: KorFontDataset, image_dir: str, save_txt_path: str):

@@ -4,13 +4,13 @@ from typing import TypeVar, Type
 
 from tqdm import tqdm
 
-from one_by_one.data_loader import (
+from rec.one_by_one.data_loader import (
     OcrDataLoader,
     get_all_file_paths,
     get_all_image_file_paths,
     load_image_data,
 )
-from one_by_one.processor import OcrDataProcessor
+from rec.one_by_one.processor import OcrDataProcessor
 
 T = TypeVar("T")
 

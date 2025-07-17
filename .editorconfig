@@ -1,2 +1,2 @@
-[dict/*.txt]
+[*.txt]
 trim_trailing_whitespace = false

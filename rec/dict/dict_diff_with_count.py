@@ -5,7 +5,9 @@ def convert():
 
     # various_char_set_count.txt 읽어서 문자-빈도 dict 생성
     char_count_dict = {}
-    with open("./various_forms_of_hangul/various_char_set.txt", "r", encoding="utf-8") as f:
+    with open(
+        "various_forms_of_hangul/various_char_set.txt", "r", encoding="utf-8"
+    ) as f:
         for line in f:
             parts = line.strip().split("\t")
             if len(parts) == 2:

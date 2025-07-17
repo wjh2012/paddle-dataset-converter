@@ -2,8 +2,8 @@ import os
 
 import cv2
 
-from one_by_one.processor import OcrDataProcessor
-from one_by_one.various_forms_of_hangul.data_structure import (
+from rec.one_by_one.processor import OcrDataProcessor
+from rec.one_by_one.various_forms_of_hangul.data_structure import (
     VariousFormsOfHangulData,
 )
 

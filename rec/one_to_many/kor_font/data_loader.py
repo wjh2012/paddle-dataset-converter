@@ -1,6 +1,6 @@
 import msgspec
 
-from one_to_many.kor_font.data_structure import KorFontDataset
+from rec.one_to_many.kor_font.data_structure import KorFontDataset
 
 
 def read(label_dir):

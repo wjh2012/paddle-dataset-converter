@@ -2,8 +2,8 @@ import os
 import cv2
 import numpy as np
 
-from one_by_one.finance_ocr.data_structure import FinanceOcrData
-from one_by_one.processor import OcrDataProcessor
+from rec.one_by_one.finance_ocr.data_structure import FinanceOcrData
+from rec.one_by_one.processor import OcrDataProcessor
 
 
 class FinanceOcrProcessor(OcrDataProcessor):
