@@ -32,4 +32,4 @@ def sort_by_unicode(input_path: str, output_path: str = "results.txt") -> None:
 
 # 예제 사용
 if __name__ == "__main__":
-    sort_by_unicode("special.txt", "results.txt")
+    sort_by_unicode("charset/special.txt", "results.txt")

@@ -1,11 +1,11 @@
 def convert():
     # basic-ksx1001.txt 읽기 (기준 문자 집합)
-    with open("basic-ksx1001.txt", "r", encoding="utf-8") as f:
+    with open("charset/basic-ksx1001.txt", "r", encoding="utf-8") as f:
         basic_set = set(line.strip() for line in f if line.strip())
 
-    # all_results_with_count_sorted.txt 읽어서 문자-빈도 dict 생성
+    # various_char_set_count.txt 읽어서 문자-빈도 dict 생성
     char_count_dict = {}
-    with open("all_results_with_count_sorted.txt", "r", encoding="utf-8") as f:
+    with open("./various_forms_of_hangul/various_char_set.txt", "r", encoding="utf-8") as f:
         for line in f:
             parts = line.strip().split("\t")
             if len(parts) == 2:
