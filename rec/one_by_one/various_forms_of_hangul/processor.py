@@ -1,4 +1,5 @@
 import os
+import shutil
 
 import cv2
 
@@ -34,6 +35,16 @@ class VariousFormsOfHangulProcessor(OcrDataProcessor):
                 results.append((cropped_filename, text))
         elif label_data.text.letter:
             text = label_data.text.letter.value
+
+            # 원본 이미지를 save_dir로 복사
+            original_path = os.path.join(self.image_dir, image_filename)
+            copied_path = os.path.join(save_dir, image_filename)
+
+            os.makedirs(save_dir, exist_ok=True)
+            if not os.path.exists(copied_path):
+                shutil.copy(original_path, copied_path)
+
+            # 복사된 파일명을 결과에 추가
             results.append((image_filename, text))
 
         return results
