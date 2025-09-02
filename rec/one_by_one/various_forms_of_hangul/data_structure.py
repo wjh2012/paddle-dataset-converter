@@ -36,8 +36,8 @@ class Letter(msgspec.Struct):
 
 
 class Text(msgspec.Struct):
-    word: Optional[List[Word]]
-    letter: Optional[Letter]
+    word: Optional[List[Word]] = None
+    letter: Optional[Letter] = None
 
 
 class VariousFormsOfHangulData(msgspec.Struct):
