@@ -1,3 +1,4 @@
+# 공공행정문서 압축해제
 find . -name "*.zip" -print0 | while IFS= read -r -d '' zipfile; do
     echo "==> 압축 해제 중: $zipfile"
 

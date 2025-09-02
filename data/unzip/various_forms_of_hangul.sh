@@ -1,3 +1,4 @@
+# 다양한 형태의 한글문자 압축해제
 # 재귀적 unzip
 find . -name "*.zip" -print0 | while IFS= read -r -d '' zipfile; do
     echo "==> 압축 해제 중: $zipfile"
