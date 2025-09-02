@@ -21,7 +21,7 @@ class VariousFormsOfHangulProcessor(OcrDataProcessor):
                 if not box:
                     print("box 없음")
                     continue
-                text = word_obj.value.strip()
+                text = word_obj.value
                 if not text:
                     print("text 없음")
                     continue
@@ -39,16 +39,13 @@ class VariousFormsOfHangulProcessor(OcrDataProcessor):
                 results.append((cropped_filename, text))
         elif label_data.text.letter:
             text = label_data.text.letter.value
+            if not text:
+                print(f"[경고] letter text 없음: {image_filename}")
+                return results
 
-            # 원본 이미지를 save_dir로 복사
-            original_path = os.path.join(self.image_dir, image_filename)
-            copied_path = os.path.join(save_dir, image_filename)
-
-            os.makedirs(save_dir, exist_ok=True)
-            if not os.path.exists(copied_path):
-                shutil.copy(original_path, copied_path)
-
-            # 복사된 파일명을 결과에 추가
-            results.append((image_filename, text))
+            save_filename = f"{os.path.splitext(image_filename)[0]}_letter.png"
+            save_path = os.path.join(save_dir, save_filename)
+            cv2.imwrite(save_path, image)
+            results.append((save_filename, text))
 
         return results
