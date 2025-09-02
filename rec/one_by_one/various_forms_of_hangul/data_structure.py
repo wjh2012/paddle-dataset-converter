@@ -26,9 +26,10 @@ class License(msgspec.Struct):
 
 
 class Word(msgspec.Struct):
-    wordbox: List[int]
     value: str
     source: str
+    wordbox: Optional[List[int]] = None
+    charbox: Optional[List[int]] = None
 
 
 class Letter(msgspec.Struct):
@@ -36,6 +37,7 @@ class Letter(msgspec.Struct):
 
 
 class Text(msgspec.Struct):
+    type: Optional[str] = None
     word: Optional[List[Word]] = None
     letter: Optional[Letter] = None
 

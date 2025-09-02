@@ -17,9 +17,13 @@ class VariousFormsOfHangulProcessor(OcrDataProcessor):
 
         if label_data.text.word:
             for idx, word_obj in enumerate(label_data.text.word):
-                box = word_obj.wordbox
+                box = word_obj.wordbox or word_obj.charbox
+                if not box:
+                    print("box 없음")
+                    continue
                 text = word_obj.value.strip()
                 if not text:
+                    print("text 없음")
                     continue
 
                 x1, y1, x2, y2 = box
