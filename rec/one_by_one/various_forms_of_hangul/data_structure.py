@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 import msgspec
 
@@ -31,8 +31,13 @@ class Word(msgspec.Struct):
     source: str
 
 
+class Letter(msgspec.Struct):
+    value: str
+
+
 class Text(msgspec.Struct):
-    word: List[Word]
+    word: Optional[List[Word]]
+    letter: Optional[Letter]
 
 
 class VariousFormsOfHangulData(msgspec.Struct):
