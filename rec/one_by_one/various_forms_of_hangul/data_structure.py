@@ -27,7 +27,6 @@ class License(msgspec.Struct):
 
 class Word(msgspec.Struct):
     value: str
-    source: str
     wordbox: Optional[List[int]] = None
     charbox: Optional[List[int]] = None
 
@@ -37,13 +36,10 @@ class Letter(msgspec.Struct):
 
 
 class Text(msgspec.Struct):
-    type: Optional[str] = None
     word: Optional[List[Word]] = None
     letter: Optional[Letter] = None
 
 
 class VariousFormsOfHangulData(msgspec.Struct):
-    # info:Info
     image: Image
-    # license: License
     text: Text
