@@ -5,7 +5,7 @@ from typing import TypeVar, Generic
 T = TypeVar("T")
 
 
-class OcrDataProcessor(ABC, Generic[T]):
+class RecDataProcessor(ABC, Generic[T]):
     @abstractmethod
     def crop_and_save_words(
         self, label_data: T, image, image_filename: str, save_dir: str

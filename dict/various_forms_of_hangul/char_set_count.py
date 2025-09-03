@@ -1,6 +1,6 @@
 from collections import defaultdict
-from rec.one_by_one.data_loader import OcrDataLoader, get_all_file_paths
-from rec.one_by_one.various_forms_of_hangul.data_structure import (
+from app.rec.one_by_one.data_loader import OcrDataLoader, get_all_file_paths
+from app.rec.one_by_one import (
     VariousFormsOfHangulData,
 )
 

@@ -11,10 +11,11 @@ class Image(msgspec.Struct):
 
 class Bbox(msgspec.Struct):
     data: str
+    id: int
     x: List[int]
     y: List[int]
 
 
-class OcrDataFinance(msgspec.Struct):
+class OcrPublicData(msgspec.Struct):
     images: Image = msgspec.field(name="Images")
-    bbox: List[Bbox] = msgspec.field(name="bbox")
+    bbox: List[Bbox] = msgspec.field(name="Bbox")

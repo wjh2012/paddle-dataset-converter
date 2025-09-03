@@ -1,6 +1,6 @@
-from rec.one_to_many.kor_font.data_structure import filter_annotations
-from rec.one_to_many.kor_font.data_loader import read_label_file
-from rec.one_to_many.kor_font.txt_maker import make_train_txt
+from kor_font.data_structure import filter_annotations
+from kor_font.data_loader import read_label_file
+from kor_font.txt_maker import make_train_txt
 
 
 def main():

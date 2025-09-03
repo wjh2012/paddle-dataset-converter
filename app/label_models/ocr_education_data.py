@@ -16,6 +16,6 @@ class Bbox(msgspec.Struct):
     y: List[int]
 
 
-class OcrDataEducation(msgspec.Struct):
+class OcrDataEducationData(msgspec.Struct):
     images: Image = msgspec.field(name="Images")
     bbox: List[Bbox] = msgspec.field(name="Bbox")

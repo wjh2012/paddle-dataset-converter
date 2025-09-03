@@ -1,13 +1,14 @@
 import os
 import cv2
 
-from rec.one_by_one.ocr_data_education.data_structure import OcrDataEducation
-from rec.one_by_one.processor import OcrDataProcessor
+from app.label_models.ocr_public_data import OcrPublicData
+
+from app.rec.rec_data_processor import RecDataProcessor
 
 
-class StandardOcrDataProcessor(OcrDataProcessor):
+class OcrPublicProcessor(RecDataProcessor):
     def crop_and_save_words(
-        self, label_data: OcrDataEducation, image, image_filename, save_dir
+        self, label_data: OcrPublicData, image, image_filename, save_dir
     ):
         results = []
 

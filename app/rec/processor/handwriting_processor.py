@@ -1,16 +1,16 @@
 import os
 import cv2
 
-from rec.one_by_one.ocr_data_public.data_structure import OcrDataPublic
-from rec.one_by_one.processor import OcrDataProcessor
+from app.label_models.large_handwriting_data import LargeHandwritingData
+
+from app.rec.rec_data_processor import RecDataProcessor
 
 
-class StandardOcrDataProcessor(OcrDataProcessor):
+class LargeHandwritingProcessor(RecDataProcessor):
     def crop_and_save_words(
-        self, label_data: OcrDataPublic, image, image_filename, save_dir
+        self, label_data: LargeHandwritingData, image, image_filename, save_dir
     ):
         results = []
-
         for idx, bbox_obj in enumerate(label_data.bbox):
             text = bbox_obj.data  # 텍스트
             x_list = bbox_obj.x

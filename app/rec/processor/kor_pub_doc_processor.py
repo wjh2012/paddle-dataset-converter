@@ -2,11 +2,12 @@ import os
 
 import cv2
 
-from rec.one_by_one.kor_pub_doc.data_structure import KorPubDocData
-from rec.one_by_one.processor import OcrDataProcessor
+from app.label_models.kor_pub_doc_data import KorPubDocData
+
+from app.rec.rec_data_processor import RecDataProcessor
 
 
-class KorPubDocDataProcessor(OcrDataProcessor):
+class KorPubDocProcessor(RecDataProcessor):
     def crop_and_save_words(
         self, label_data: KorPubDocData, image, image_filename, save_dir
     ):
