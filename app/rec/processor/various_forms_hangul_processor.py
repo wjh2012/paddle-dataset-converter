@@ -1,7 +1,4 @@
-import os
-
-import cv2
-
+from typing import List, Tuple
 from app.label_models.various_forms_hangul_data import VariousFormsOfHangulData
 
 from app.rec.rec_data_processor import RecDataProcessor
@@ -9,42 +6,51 @@ from app.rec.runner import Runner
 
 
 class VariousFormsOfHangulProcessor(RecDataProcessor):
-    def crop_and_save_words(
-        self, label_data: VariousFormsOfHangulData, image, image_filename, save_dir
-    ):
-        results = []
-        base_name = os.path.splitext(os.path.basename(image_filename))[0]
+    def parse_data(
+        self, label_data: VariousFormsOfHangulData
+    ) -> List[Tuple[List[List[int]], str]]:
 
-        if label_data.text.word:
+        results: List[Tuple[List[List[int]], str]] = []
+        # word 모드
+        if getattr(label_data.text, "word", None):
             for idx, word_obj in enumerate(label_data.text.word):
-                box = word_obj.wordbox or word_obj.charbox
-                if not box:
-                    print("box 없음")
-                    raise
-                text = word_obj.value
+                box = getattr(word_obj, "wordbox", None) or getattr(
+                    word_obj, "charbox", None
+                )
+                if not box or len(box) != 4:
+                    raise ValueError(
+                        "word 항목의 box는 [x1, y1, x2, y2] 형식이어야 합니다."
+                    )
+                x1, y1, x2, y2 = map(int, box)
+                if x1 >= x2 or y1 >= y2:
+                    raise ValueError(f"word[{idx}] box 좌표가 올바르지 않습니다: {box}")
+
+                text = getattr(word_obj, "value", None)
                 if not text:
-                    print("text 없음")
-                    raise
+                    raise ValueError(f"word[{idx}]의 text(value)가 없습니다.")
 
-                x1, y1, x2, y2 = box
-                cropped_img = image[y1:y2, x1:x2]
+                quad = [[x1, y1], [x2, y1], [x2, y2], [x1, y2]]
+                results.append((quad, text))
 
-                cropped_filename = f"{base_name}_word_{idx+1}.png"
-                save_path = os.path.join(save_dir, cropped_filename)
-                cv2.imwrite(save_path, cropped_img)
-
-                # 결과에 추가
-                results.append((cropped_filename, text))
-        elif label_data.text.letter:
-            text = label_data.text.letter.value
+        # letter 모드
+        elif getattr(label_data.text, "letter", None):
+            letter = label_data.text.letter
+            text = getattr(letter, "value", None)
             if not text:
-                print(f"[경고] letter text 없음: {image_filename}")
-                raise
+                raise ValueError("letter의 text(value)가 없습니다.")
 
-            save_filename = f"{base_name}_letter.png"
-            save_path = os.path.join(save_dir, save_filename)
-            cv2.imwrite(save_path, image)
-            results.append((save_filename, text))
+            box = getattr(letter, "box", None)
+            if not box or len(box) != 4:
+                raise ValueError("letter.box는 [x1, y1, x2, y2] 형식이어야 합니다.")
+            x1, y1, x2, y2 = map(int, box)
+            if x1 >= x2 or y1 >= y2:
+                raise ValueError(f"letter box 좌표가 올바르지 않습니다: {box}")
+
+            quad = [[x1, y1], [x2, y1], [x2, y2], [x1, y2]]
+            results.append((quad, text))
+
+        else:
+            raise ValueError("label_data.text에 word 또는 letter가 없습니다.")
 
         return results
 

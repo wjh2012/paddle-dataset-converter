@@ -2,6 +2,7 @@ import os
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from typing import TypeVar, Type, Optional, Tuple, List
 
+import cv2
 from tqdm import tqdm
 
 from app.data_loader.label_data_loader import (
@@ -18,17 +19,34 @@ T = TypeVar("T")
 
 def _process_one(
     args: Tuple[str, str, Type[T], str, RecDataProcessor],
-) -> Optional[Tuple[str, str]]:
+) -> Optional[List[Tuple[str, str]]]:
     label_path, image_path, data_type, image_save_dir, processor = args
     try:
         label_data = load_label_data(label_path, data_type)
         image = load_image_data(image_path)
-        return processor.crop_and_save_words(
-            label_data, image, image_path, image_save_dir
-        )
+
+        parsed_data = processor.parse_data(label_data)
+        base_name = os.path.splitext(os.path.basename(image_path))[0]
+        results: List[Tuple[str, str]] = []
+
+        for idx, (quad, text) in enumerate(parsed_data):
+
+            x1, y1 = map(int, quad[0])
+            x2, y2 = map(int, quad[2])
+
+            cropped_img = image[y1:y2, x1:x2]
+
+            cropped_filename = f"{base_name}_word_{idx+1}.png"
+            save_path = os.path.join(image_save_dir, cropped_filename)
+            cv2.imwrite(save_path, cropped_img)
+
+            # 결과에 추가
+            results.append((cropped_filename, text))
+        return results
+
     except Exception as e:
         print(f"[경고] 처리 실패: image={image_path}, label={label_path}, err={e}")
-        return None
+        raise e
 
 
 class Runner:
