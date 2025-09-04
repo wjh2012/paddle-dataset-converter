@@ -26,23 +26,41 @@ def _process_one(
         image = load_image_data(image_path)
 
         parsed_data = processor.parse_data(label_data)
-        base_name = os.path.splitext(os.path.basename(image_path))[0]
-        results: List[Tuple[str, str]] = []
 
-        for idx, (quad, text) in enumerate(parsed_data):
+        if parsed_data["type"] == "word":
+            results: List[Tuple[str, str]] = []
 
-            x1, y1 = map(int, quad[0])
-            x2, y2 = map(int, quad[2])
+            base_name = os.path.splitext(os.path.basename(image_path))[0]
 
-            cropped_img = image[y1:y2, x1:x2]
+            for idx, (quad, text) in enumerate(parsed_data["data"]):
 
-            cropped_filename = f"{base_name}_word_{idx+1}.png"
-            save_path = os.path.join(image_save_dir, cropped_filename)
-            cv2.imwrite(save_path, cropped_img)
+                x1, y1 = map(int, quad[0])
+                x2, y2 = map(int, quad[2])
 
-            # 결과에 추가
-            results.append((cropped_filename, text))
-        return results
+                cropped_img = image[y1:y2, x1:x2]
+
+                cropped_filename = f"{base_name}_word_{idx+1}.png"
+                save_path = os.path.join(image_save_dir, cropped_filename)
+                cv2.imwrite(save_path, cropped_img)
+
+                # 결과에 추가
+                results.append((cropped_filename, text))
+
+            return results
+
+        elif parsed_data["type"] == "letter":
+            results: List[Tuple[str, str]] = []
+
+            base_name = os.path.splitext(os.path.basename(image_path))[0]
+            quad, text = parsed_data["data"][0]
+            save_filename = f"{base_name}_letter.png"
+            save_path = os.path.join(image_save_dir, save_filename)
+            cv2.imwrite(save_path, image)
+            results.append((save_filename, text))
+            return results
+
+        else:
+            raise ValueError("parsed_data.type에 word 또는 letter가 없습니다.")
 
     except Exception as e:
         print(f"[경고] 처리 실패: image={image_path}, label={label_path}, err={e}")
