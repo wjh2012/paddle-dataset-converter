@@ -132,6 +132,10 @@ class Runner:
                 f"작은 쪽({min(len(label_paths), len(image_paths))})에 맞춰 진행합니다."
             )
 
+        image_file_map = {
+            os.path.splitext(os.path.basename(p))[0]: p for p in image_paths
+        }
+
         label_paths.sort()
         image_paths.sort()
 

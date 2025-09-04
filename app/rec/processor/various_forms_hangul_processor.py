@@ -12,24 +12,42 @@ class VariousFormsOfHangulProcessor(RecDataProcessor):
         # word 모드
         if label_data.text.word:
             results: List[Tuple[List[List[int]], str]] = []
-            for idx, word in enumerate(label_data.text.word):
-                box = word.wordbox or word.charbox
 
-                if not box or len(box) != 4:
-                    raise ValueError(
-                        "word 항목의 box는 [x1, y1, x2, y2] 형식이어야 합니다."
-                    )
-                x1, y1, x2, y2 = map(int, box)
-                if x1 >= x2 or y1 >= y2:
-                    raise ValueError(f"word[{idx}] box 좌표가 올바르지 않습니다: {box}")
+            if label_data.text.type:
+                first_box = label_data.text.word[0].charbox
+                last_box = label_data.text.word[-1].charbox
 
-                text = word.value
-                if not text:
-                    raise ValueError(f"word[{idx}]의 text(value)가 없습니다.")
-
-                quad = [[x1, y1], [x2, y1], [x2, y2], [x1, y2]]
+                quad = [
+                    [first_box[0], min(first_box[1], last_box[1])],
+                    [last_box[2], min(first_box[1], last_box[1])],
+                    [last_box[2], max(first_box[3], last_box[3])],
+                    [first_box[0], max(first_box[3], last_box[3])],
+                ]
+                text = "".join(word.value for word in label_data.text.word)
                 results.append((quad, text))
-            return {"type": "word", "data": results}
+                return {"type": "word", "data": results}
+
+            else:
+                for idx, word in enumerate(label_data.text.word):
+                    box = word.wordbox or word.charbox
+
+                    if not box or len(box) != 4:
+                        raise ValueError(
+                            "word 항목의 box는 [x1, y1, x2, y2] 형식이어야 합니다."
+                        )
+                    x1, y1, x2, y2 = map(int, box)
+                    if x1 >= x2 or y1 >= y2:
+                        raise ValueError(
+                            f"word[{idx}] box 좌표가 올바르지 않습니다: {box}"
+                        )
+
+                    text = word.value
+                    if not text:
+                        raise ValueError(f"word[{idx}]의 text(value)가 없습니다.")
+
+                    quad = [[x1, y1], [x2, y1], [x2, y2], [x1, y2]]
+                    results.append((quad, text))
+                return {"type": "word", "data": results}
 
         # letter 모드
         elif label_data.text.letter:
@@ -52,7 +70,7 @@ if __name__ == "__main__":
         data_processor=processor,
     )
     runner.run(
-        data_dir=r"D:\ai\ocr_data\다양한 형태의 한글 문자 OCR\Validation\[원천]validation_필기체",
-        label_dir=r"D:\ai\ocr_data\다양한 형태의 한글 문자 OCR\Validation\[라벨]validation_필기체",
-        save_dir=r"D:\ai\ocr_data\다양한 형태의 한글 문자 OCR\tmp",
+        data_dir=r"D:\ai\ocr_data\various\Validation\[원천]validation_필기체",
+        label_dir=r"D:\ai\ocr_data\various\Validation\[라벨]validation_필기체",
+        save_dir=r"D:\ai\ocr_data\various\tmp",
     )
