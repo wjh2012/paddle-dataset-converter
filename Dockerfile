@@ -7,6 +7,8 @@ RUN apt-get update && \
 
 WORKDIR ${WORK_DIR}
 
+ADD ./requirements.txt ${WORK_DIR}/requirements.txt
+
 RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
 CMD ["/bin/bash"]
