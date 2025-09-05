@@ -6,6 +6,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        WORK_DIR: ${WORK_DIR}
     volumes:
       - .:${WORK_DIR}
       - ${DATA_DIR}:/data
