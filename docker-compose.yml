@@ -1,0 +1,12 @@
+services:
+  paddle-dataset-converter:
+    container_name: paddle-dataset-converter
+    environment:
+      - TZ=Asia/Seoul
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:${WORK_DIR}
+      - ${DATA_DIR}:/data
+    tty: true
