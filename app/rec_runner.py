@@ -12,8 +12,8 @@ from app.data_loader.label_data_loader import (
     get_all_file_paths,
 )
 from app.data_loader.load_image_data import load_image_data
-from app.rec.rec_data_processor import RecDataProcessor
-from app.rec.utils import get_args
+from app.label_data_processor import LabelDataProcessor
+from app.utils import get_args
 
 T = TypeVar("T")
 
@@ -80,7 +80,7 @@ def _process_one(
         return None
 
 
-def _process_label(label_path, data_type: Type[T], processor: RecDataProcessor):
+def _process_label(label_path, data_type: Type[T], processor: LabelDataProcessor):
     try:
         label_data = load_label_data(label_path, data_type)
         return processor.parse_data(label_data)
@@ -89,11 +89,11 @@ def _process_label(label_path, data_type: Type[T], processor: RecDataProcessor):
         return None
 
 
-class Runner:
+class RecRunner:
     def __init__(
         self,
         data_type: Type[T],
-        data_processor: RecDataProcessor,
+        data_processor: LabelDataProcessor,
     ):
         self.data_type = data_type
         self.data_processor = data_processor

@@ -5,7 +5,7 @@ from typing import TypeVar, Generic
 T = TypeVar("T")
 
 
-class RecDataProcessor(ABC, Generic[T]):
+class LabelDataProcessor(ABC, Generic[T]):
     @abstractmethod
     def parse_data(self, label_data: T):
         """라벨 데이터와 이미지를 받아 단어 영역을 자르고 저장"""

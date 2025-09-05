@@ -1,15 +1,15 @@
 import os
 
+from app.label_data_processor import LabelDataProcessor
+from app.rec_runner import RecRunner
+
 os.environ["OMP_NUM_THREADS"] = "1"
 
 from typing import List, Tuple, Dict
 from app.label_models.various_forms_hangul_data import VariousFormsOfHangulData
 
-from app.rec.rec_data_processor import RecDataProcessor
-from app.rec.runner import Runner
 
-
-class VariousFormsOfHangulProcessor(RecDataProcessor):
+class VariousFormsOfHangulProcessor(LabelDataProcessor):
     def parse_data(
         self, label_data: VariousFormsOfHangulData
     ) -> Dict[str, List[Tuple[List[List[int]], str]]]:
@@ -81,7 +81,7 @@ class VariousFormsOfHangulProcessor(RecDataProcessor):
 
 if __name__ == "__main__":
     processor = VariousFormsOfHangulProcessor()
-    runner = Runner(
+    runner = RecRunner(
         data_type=VariousFormsOfHangulData,
         data_processor=processor,
     )
