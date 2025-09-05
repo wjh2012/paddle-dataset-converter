@@ -1,5 +1,6 @@
 import os
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures import as_completed
+from concurrent.futures.thread import ThreadPoolExecutor
 from typing import TypeVar, Type, Optional, Tuple, List
 
 import cv2
@@ -18,14 +19,20 @@ T = TypeVar("T")
 
 
 def _process_one(
-    args: Tuple[str, str, Type[T], str, RecDataProcessor],
+    parsed_data,
+    image_path,
+    image_save_dir,
 ) -> Optional[List[Tuple[str, str]]]:
-    label_path, image_path, data_type, image_save_dir, processor = args
+    if not image_path or not os.path.exists(image_path):
+        print(f"[WARN] image_path missing for imageId={parsed_data.get('imageId')}")
+        return None
+
     try:
-        label_data = load_label_data(label_path, data_type)
         image = load_image_data(image_path)
 
-        parsed_data = processor.parse_data(label_data)
+        if image is None:
+            print(f"[WARN] load_image_data 반환 None: {image_path}")
+            return None
 
         if parsed_data["type"] == "word":
             results: List[Tuple[str, str]] = []
@@ -33,20 +40,25 @@ def _process_one(
             base_name = os.path.splitext(os.path.basename(image_path))[0]
 
             for idx, (quad, text) in enumerate(parsed_data["data"]):
+                try:
+                    x1, y1 = map(int, quad[0])
+                    x2, y2 = map(int, quad[2])
 
-                x1, y1 = map(int, quad[0])
-                x2, y2 = map(int, quad[2])
+                    cropped_img = image[y1:y2, x1:x2]
 
-                cropped_img = image[y1:y2, x1:x2]
+                    cropped_filename = f"{base_name}_word_{idx+1}.png"
+                    save_path = os.path.join(image_save_dir, cropped_filename)
+                    cv2.imwrite(save_path, cropped_img)
 
-                cropped_filename = f"{base_name}_word_{idx+1}.png"
-                save_path = os.path.join(image_save_dir, cropped_filename)
-                cv2.imwrite(save_path, cropped_img)
+                    # 결과에 추가
+                    results.append((cropped_filename, text))
+                except Exception as e:
+                    print(
+                        f"[WARN] single word crop fail: {image_path} idx={idx} err={e}"
+                    )
+                    continue
 
-                # 결과에 추가
-                results.append((cropped_filename, text))
-
-            return results
+            return results if results else None
 
         elif parsed_data["type"] == "letter":
             results: List[Tuple[str, str]] = []
@@ -60,11 +72,21 @@ def _process_one(
             return results
 
         else:
-            raise ValueError("parsed_data.type에 word 또는 letter가 없습니다.")
+            print(f"[WARN] unknown parsed_data type: {parsed_data.get('type')}")
+            return None
 
     except Exception as e:
-        print(f"[경고] 처리 실패: image={image_path}, label={label_path}, err={e}")
-        raise e
+        print(f"[경고] 처리 실패: image={image_path}, err={e}")
+        return None
+
+
+def _process_label(label_path, data_type: Type[T], processor: RecDataProcessor):
+    try:
+        label_data = load_label_data(label_path, data_type)
+        return processor.parse_data(label_data)
+    except Exception as e:
+        print(f"[WARN] label parse fail: {label_path} err={e}")
+        return None
 
 
 class Runner:
@@ -87,14 +109,15 @@ class Runner:
             args = get_args()
         except Exception:
             args = None
-
         if args:
-            if data_dir is None:
-                data_dir = getattr(args, "data_dir", data_dir)
-            if label_dir is None:
-                label_dir = getattr(args, "label_dir", label_dir)
-            if save_dir is None:
-                save_dir = getattr(args, "save_dir", save_dir)
+            if getattr(args, "data_dir", None):
+                data_dir = args.data_dir
+            if getattr(args, "label_dir", None):
+                label_dir = args.label_dir
+            if getattr(args, "save_dir", None):
+                save_dir = args.save_dir
+
+        print("[DEBUG] merged paths:", data_dir, label_dir, save_dir)
 
         # 2) 경로 유효성 검사
         print("데이터 경로:", data_dir)
@@ -132,34 +155,71 @@ class Runner:
                 f"작은 쪽({min(len(label_paths), len(image_paths))})에 맞춰 진행합니다."
             )
 
+        max_workers = os.cpu_count() or 1
+
+        label_process_results = []
+        with ThreadPoolExecutor(max_workers=max_workers) as ex:
+            futures = {
+                ex.submit(
+                    _process_label, label_path, self.data_type, self.data_processor
+                ): label_path
+                for label_path in label_paths
+            }
+
+            for fut in tqdm(
+                as_completed(futures),
+                total=len(futures),
+                desc="라벨 파싱 진행",
+                unit="파일",
+            ):
+                try:
+                    res = fut.result()
+                    if res:
+                        label_process_results.append(res)
+                    else:
+                        print(f"[WARN] label future return None")
+                except Exception as e:
+                    print(f"[WARN] label future exception: {e}")
+                    continue
+
+        # imageId: imagePath
         image_file_map = {
             os.path.splitext(os.path.basename(p))[0]: p for p in image_paths
         }
 
-        label_paths.sort()
-        image_paths.sort()
+        tasks = []
+        missing_image_ids = []
+        for pd in label_process_results:
+            if not pd:
+                continue
+            image_id = pd.get("imageId")
+            ipath = image_file_map.get(image_id)
+            if ipath and os.path.exists(ipath):
+                tasks.append((pd, ipath, image_save_dir))
+            else:
+                missing_image_ids.append(image_id)
 
-        if len(label_paths) != len(image_paths):
+        if missing_image_ids:
             print(
-                f"[경고] 라벨({len(label_paths)})과 이미지({len(image_paths)}) 개수가 다릅니다. "
-                f"작은 쪽({min(len(label_paths), len(image_paths))})에 맞춰 진행합니다."
+                f"[경고] 이미지가 없는 라벨 {len(missing_image_ids)}개 발견. 샘플: {missing_image_ids[:20]}"
             )
 
-        pair_count = min(len(label_paths), len(image_paths))
-        label_paths = label_paths[:pair_count]
-        image_paths = image_paths[:pair_count]
+        if not tasks:
+            print("[오류] 처리할 작업이 없습니다.")
+            return
 
-        # 4) 병렬 실행
-        tasks = [
-            (lp, ip, self.data_type, image_save_dir, self.data_processor)
-            for lp, ip in zip(label_paths, image_paths)
-        ]
+        image_process_results: List[Tuple[str, str]] = []
+        with ThreadPoolExecutor(max_workers=max_workers) as ex:
+            futures = {
+                ex.submit(
+                    _process_one,
+                    parsed_data,
+                    image_file_map.get(parsed_data["imageId"]),
+                    image_save_dir,
+                ): parsed_data
+                for parsed_data in label_process_results
+            }
 
-        results: List[Tuple[str, str]] = []
-        max_workers = os.cpu_count() or 1
-
-        with ProcessPoolExecutor(max_workers=max_workers) as ex:
-            futures = [ex.submit(_process_one, t) for t in tasks]
             for fut in tqdm(
                 as_completed(futures),
                 total=len(futures),
@@ -168,15 +228,20 @@ class Runner:
             ):
                 res = fut.result()
                 if not res:
+                    print(f"[WARN] crop future return None")
                     continue
-                results.extend(res)
 
-        print(f"[정보] 성공적으로 처리된 항목: {len(results)} / {pair_count}")
+                image_process_results.extend(res)
+
+        pair_count = min(len(label_paths), len(image_paths))
+        print(
+            f"[정보] 성공적으로 처리된 항목: {len(image_process_results)} / {pair_count}"
+        )
 
         # 5) 결과 저장
-        if results:
+        if image_process_results:
             with open(txt_save_path, "w", encoding="utf-8") as f:
-                for image_filename, text in results:
+                for image_filename, text in image_process_results:
                     f.write(f"images/{image_filename}\t{text}\n")
 
             print(

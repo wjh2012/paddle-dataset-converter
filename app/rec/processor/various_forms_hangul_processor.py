@@ -1,3 +1,7 @@
+import os
+
+os.environ["OMP_NUM_THREADS"] = "1"
+
 from typing import List, Tuple, Dict
 from app.label_models.various_forms_hangul_data import VariousFormsOfHangulData
 
@@ -25,7 +29,11 @@ class VariousFormsOfHangulProcessor(RecDataProcessor):
                 ]
                 text = "".join(word.value for word in label_data.text.word)
                 results.append((quad, text))
-                return {"type": "word", "data": results}
+                return {
+                    "type": "word",
+                    "imageId": os.path.splitext(label_data.image.file_name)[0],
+                    "data": results,
+                }
 
             else:
                 for idx, word in enumerate(label_data.text.word):
@@ -47,7 +55,11 @@ class VariousFormsOfHangulProcessor(RecDataProcessor):
 
                     quad = [[x1, y1], [x2, y1], [x2, y2], [x1, y2]]
                     results.append((quad, text))
-                return {"type": "word", "data": results}
+                return {
+                    "type": "word",
+                    "imageId": os.path.splitext(label_data.image.file_name)[0],
+                    "data": results,
+                }
 
         # letter 모드
         elif label_data.text.letter:
@@ -57,7 +69,11 @@ class VariousFormsOfHangulProcessor(RecDataProcessor):
             results.append(([], text))
             if not text:
                 raise ValueError("letter의 text(value)가 없습니다.")
-            return {"type": "letter", "data": results}
+            return {
+                "type": "letter",
+                "imageId": os.path.splitext(label_data.image.file_name)[0],
+                "data": results,
+            }
 
         else:
             raise ValueError("label_data.text에 word 또는 letter가 없습니다.")
