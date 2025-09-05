@@ -1,7 +1,9 @@
 import os
 
+from app.det_runner import DetRunner
 from app.label_data_processor import LabelDataProcessor
 from app.rec_runner import RecRunner
+from app.utils import get_args
 
 os.environ["OMP_NUM_THREADS"] = "1"
 
@@ -80,13 +82,45 @@ class VariousFormsOfHangulProcessor(LabelDataProcessor):
 
 
 if __name__ == "__main__":
+    mode = "rec"
+    data_dir = r"D:\ai\ocr_data\various\Validation\[원천]validation_필기체"
+    label_dir = r"D:\ai\ocr_data\various\Validation\[라벨]validation_필기체"
+    save_dir = r"D:\ai\ocr_data\various\tmp"
+
+    # 1) 인자 파싱 (args가 있을 때만 덮어쓰기)
+    try:
+        args = get_args()
+    except Exception:
+        args = None
+    if args:
+        if getattr(args, "mode", None):
+            mode = args.mode
+        if getattr(args, "data_dir", None):
+            data_dir = args.data_dir
+        if getattr(args, "label_dir", None):
+            label_dir = args.label_dir
+        if getattr(args, "save_dir", None):
+            save_dir = args.save_dir
+
+    print("[DEBUG] merged paths:", mode, data_dir, label_dir, save_dir)
+
     processor = VariousFormsOfHangulProcessor()
-    runner = RecRunner(
-        data_type=VariousFormsOfHangulData,
-        data_processor=processor,
-    )
+
+    if mode == "det":
+        runner = DetRunner(
+            data_type=VariousFormsOfHangulData,
+            data_processor=processor,
+        )
+    elif mode == "rec":
+        runner = RecRunner(
+            data_type=VariousFormsOfHangulData,
+            data_processor=processor,
+        )
+    else:
+        raise ValueError("mode error")
+
     runner.run(
-        data_dir=r"D:\ai\ocr_data\various\Validation\[원천]validation_필기체",
-        label_dir=r"D:\ai\ocr_data\various\Validation\[라벨]validation_필기체",
-        save_dir=r"D:\ai\ocr_data\various\tmp",
+        data_dir=data_dir,
+        label_dir=label_dir,
+        save_dir=save_dir,
     )

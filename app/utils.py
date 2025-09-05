@@ -7,6 +7,7 @@ T = TypeVar("T")
 
 def get_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--mode", type=str, default=None, help="rec 또는 det")
     parser.add_argument(
         "--data_dir",
         type=str,

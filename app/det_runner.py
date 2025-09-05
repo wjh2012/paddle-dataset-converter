@@ -34,45 +34,28 @@ def _process_one(
             print(f"[WARN] load_image_data 반환 None: {image_path}")
             return None
 
-        if parsed_data["type"] == "word":
-            results: List[Tuple[str, str]] = []
+        if parsed_data["type"] == "word" and len(parsed_data["data"]) > 1:
 
             base_name = os.path.splitext(os.path.basename(image_path))[0]
+            save_file_name = f"{base_name}.png"
+            save_path = os.path.join(image_save_dir, save_file_name)
+            cv2.imwrite(save_path, image)
 
+            results: Tuple[str, List[dict]]
+            label_data: List[dict] = []
             for idx, (quad, text) in enumerate(parsed_data["data"]):
                 try:
-                    x1, y1 = map(int, quad[0])
-                    x2, y2 = map(int, quad[2])
-
-                    cropped_img = image[y1:y2, x1:x2]
-
-                    cropped_filename = f"{base_name}_word_{idx+1}.png"
-                    save_path = os.path.join(image_save_dir, cropped_filename)
-                    cv2.imwrite(save_path, cropped_img)
-
-                    # 결과에 추가
-                    results.append((cropped_filename, text))
+                    label = {"transcription": text, "points": quad}
+                    label_data.append(label)
                 except Exception as e:
                     print(
                         f"[WARN] single word crop fail: {image_path} idx={idx} err={e}"
                     )
                     continue
-
+            results = (save_file_name, label_data)
             return results if results else None
 
-        elif parsed_data["type"] == "letter":
-            results: List[Tuple[str, str]] = []
-
-            base_name = os.path.splitext(os.path.basename(image_path))[0]
-            quad, text = parsed_data["data"][0]
-            save_filename = f"{base_name}_letter.png"
-            save_path = os.path.join(image_save_dir, save_filename)
-            cv2.imwrite(save_path, image)
-            results.append((save_filename, text))
-            return results
-
         else:
-            print(f"[WARN] unknown parsed_data type: {parsed_data.get('type')}")
             return None
 
     except Exception as e:
@@ -89,7 +72,7 @@ def _process_label(label_path, data_type: Type[T], processor: LabelDataProcessor
         return None
 
 
-class RecRunner:
+class DetRunner:
     def __init__(
         self,
         data_type: Type[T],
@@ -98,8 +81,28 @@ class RecRunner:
         self.data_type = data_type
         self.data_processor = data_processor
 
-    def run(self, data_dir, label_dir, save_dir):
+    def run(
+        self,
+        data_dir: Optional[str] = None,
+        label_dir: Optional[str] = None,
+        save_dir: Optional[str] = None,
+    ):
+        # 1) 인자 파싱 (args가 있을 때만 덮어쓰기)
+        try:
+            args = get_args()
+        except Exception:
+            args = None
+        if args:
+            if getattr(args, "data_dir", None):
+                data_dir = args.data_dir
+            if getattr(args, "label_dir", None):
+                label_dir = args.label_dir
+            if getattr(args, "save_dir", None):
+                save_dir = args.save_dir
 
+        print("[DEBUG] merged paths:", data_dir, label_dir, save_dir)
+
+        # 2) 경로 유효성 검사
         print("데이터 경로:", data_dir)
         print("라벨 경로:", label_dir)
         print("저장 경로:", save_dir)
@@ -188,7 +191,7 @@ class RecRunner:
             print("[오류] 처리할 작업이 없습니다.")
             return
 
-        image_process_results: List[Tuple[str, str]] = []
+        image_process_results: List[Tuple[str, List[dict]]] = []
         with ThreadPoolExecutor(max_workers=max_workers) as ex:
             futures = {
                 ex.submit(
@@ -208,10 +211,9 @@ class RecRunner:
             ):
                 res = fut.result()
                 if not res:
-                    print(f"[WARN] crop future return None")
                     continue
 
-                image_process_results.extend(res)
+                image_process_results.append(res)
 
         pair_count = min(len(label_paths), len(image_paths))
         print(
@@ -221,8 +223,8 @@ class RecRunner:
         # 5) 결과 저장
         if image_process_results:
             with open(txt_save_path, "w", encoding="utf-8") as f:
-                for image_filename, text in image_process_results:
-                    f.write(f"images/{image_filename}\t{text}\n")
+                for image_filename, label_data in image_process_results:
+                    f.write(f"images/{image_filename}\t{label_data}\n")
 
             print(
                 f"완료되었습니다.\n크롭 이미지 폴더: {image_save_dir}\n텍스트 파일: {txt_save_path}"
