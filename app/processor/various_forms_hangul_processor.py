@@ -1,11 +1,11 @@
 import os
 
+os.environ["OMP_NUM_THREADS"] = "1"
+
 from app.det_runner import DetRunner
 from app.label_data_processor import LabelDataProcessor
 from app.rec_runner import RecRunner
 from app.utils import get_args
-
-os.environ["OMP_NUM_THREADS"] = "1"
 
 from typing import List, Tuple, Dict
 from app.label_models.various_forms_hangul_data import VariousFormsOfHangulData
@@ -83,8 +83,8 @@ class VariousFormsOfHangulProcessor(LabelDataProcessor):
 
 if __name__ == "__main__":
     mode = "rec"
-    data_dir = r"D:\ai\ocr_data\various\Validation\[원천]validation_필기체"
-    label_dir = r"D:\ai\ocr_data\various\Validation\[라벨]validation_필기체"
+    data_dir = r"D:\ai\ocr_data\various\Validation\[원천]validation_인쇄체"
+    label_dir = r"D:\ai\ocr_data\various\Validation\[라벨]validation_인쇄체"
     save_dir = r"D:\ai\ocr_data\various\tmp"
 
     # 1) 인자 파싱 (args가 있을 때만 덮어쓰기)

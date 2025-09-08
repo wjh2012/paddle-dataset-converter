@@ -206,7 +206,7 @@ class DetRunner:
             for fut in tqdm(
                 as_completed(futures),
                 total=len(futures),
-                desc="크롭/저장 진행",
+                desc="DET 저장 진행",
                 unit="파일",
             ):
                 res = fut.result()
