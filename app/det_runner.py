@@ -1,3 +1,4 @@
+import json
 import os
 from concurrent.futures import as_completed
 from concurrent.futures.thread import ThreadPoolExecutor
@@ -224,7 +225,8 @@ class DetRunner:
         if image_process_results:
             with open(txt_save_path, "w", encoding="utf-8") as f:
                 for image_filename, label_data in image_process_results:
-                    f.write(f"images/{image_filename}\t{label_data}\n")
+                    json_str = json.dumps(label_data, ensure_ascii=False)
+                    f.write(f"images/{image_filename}\t{json_str}\n")
 
             print(
                 f"완료되었습니다.\n크롭 이미지 폴더: {image_save_dir}\n텍스트 파일: {txt_save_path}"
