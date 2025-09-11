@@ -1,7 +1,7 @@
 import json
 
 
-def main(flatten_map, input_str):
+def char_flatten(flatten_map, input_str):
     inv = {}
     for base, variants in flatten_map.items():
         if not isinstance(variants, (list, tuple)):
@@ -21,5 +21,5 @@ if __name__ == "__main__":
 
     with open(flatten_map_path, "r", encoding="utf-8") as f:
         mapping = json.load(f)
-    result = main(mapping, input_char)
+    result = char_flatten(mapping, input_char)
     print(result)
