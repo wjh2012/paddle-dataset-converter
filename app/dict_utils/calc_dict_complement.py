@@ -49,7 +49,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
 
     standard_path = "../../charset/basic-sup.txt"
-    test_path = "test.txt"
+    test_path = "../../charset/finance_ocr_charset.txt"
     save_dir = "save"
 
     if args.standard:
