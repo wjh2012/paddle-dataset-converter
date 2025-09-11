@@ -1,5 +1,6 @@
 import os
 
+from app.dict_runner import DictRunner
 from app.label_models.finance_ocr_data import FinanceOcrData
 
 os.environ["OMP_NUM_THREADS"] = "1"
@@ -53,7 +54,7 @@ class FinanceOcrProcessor(LabelDataProcessor):
 
 
 if __name__ == "__main__":
-    mode = "rec"
+    mode = "dict"
     data_dir = r"C:\Users\wjh\Downloads\finance_specialized_ocr\원천데이터"
     label_dir = r"C:\Users\wjh\Downloads\finance_specialized_ocr\라벨링데이터"
     save_dir = r"C:\Users\wjh\Desktop\test"
@@ -84,6 +85,11 @@ if __name__ == "__main__":
         )
     elif mode == "rec":
         runner = RecRunner(
+            data_type=FinanceOcrData,
+            data_processor=processor,
+        )
+    elif mode == "dict":
+        runner = DictRunner(
             data_type=FinanceOcrData,
             data_processor=processor,
         )

@@ -1,5 +1,7 @@
 import os
 
+from app.dict_runner import DictRunner
+
 os.environ["OMP_NUM_THREADS"] = "1"
 
 from app.det_runner import DetRunner
@@ -113,6 +115,11 @@ if __name__ == "__main__":
         )
     elif mode == "rec":
         runner = RecRunner(
+            data_type=VariousFormsOfHangulData,
+            data_processor=processor,
+        )
+    elif mode == "dict":
+        runner = DictRunner(
             data_type=VariousFormsOfHangulData,
             data_processor=processor,
         )
