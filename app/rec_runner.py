@@ -1,3 +1,4 @@
+import json
 import os
 from concurrent.futures import as_completed
 from concurrent.futures.thread import ThreadPoolExecutor
@@ -12,9 +13,28 @@ from app.data_loader.label_data_loader import (
     get_all_file_paths,
 )
 from app.data_loader.load_image_data import load_image_data
+from app.dict_utils.char_flatten import char_flatten
 from app.label_data_processor import LabelDataProcessor
 
 T = TypeVar("T")
+
+
+def _flatten_char(valid_label_results):
+    mapping = {}
+    flatten_map_path = "../../charset/char_map.json"
+    with open(flatten_map_path, "r", encoding="utf-8") as f:
+        mapping = json.load(f)
+
+    for parsed_data in valid_label_results:
+        new_data = []
+        for idx, (quad, text) in enumerate(parsed_data["data"]):
+            new_text = char_flatten(mapping, text)
+            if new_text != text:
+                print(new_text + " != " + text)
+                new_data.append((quad, text))
+            new_data.append((quad, new_text))
+        parsed_data["data"] = new_data
+    return valid_label_results
 
 
 def _process_one(
@@ -192,6 +212,8 @@ class RecRunner:
         valid_label_results = [
             v for idx, v in enumerate(valid_label_results) if idx % sampler == 0
         ]
+
+        valid_label_results = _flatten_char(valid_label_results)
 
         image_process_results: List[Tuple[str, str]] = []
         with ThreadPoolExecutor(max_workers=max_workers) as ex:

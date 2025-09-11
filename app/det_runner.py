@@ -14,7 +14,6 @@ from app.data_loader.label_data_loader import (
 )
 from app.data_loader.load_image_data import load_image_data
 from app.label_data_processor import LabelDataProcessor
-from app.utils import get_args
 
 T = TypeVar("T")
 
