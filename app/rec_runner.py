@@ -13,7 +13,6 @@ from app.data_loader.label_data_loader import (
 )
 from app.data_loader.load_image_data import load_image_data
 from app.label_data_processor import LabelDataProcessor
-from app.utils import get_args
 
 T = TypeVar("T")
 
@@ -40,6 +39,7 @@ def _process_one(
             base_name = os.path.splitext(os.path.basename(image_path))[0]
 
             for idx, (quad, text) in enumerate(parsed_data["data"]):
+
                 try:
                     x1, y1 = map(int, quad[0])
                     x2, y2 = map(int, quad[2])
@@ -54,7 +54,7 @@ def _process_one(
                     results.append((cropped_filename, text))
                 except Exception as e:
                     print(
-                        f"[WARN] single word crop fail: {image_path} idx={idx} err={e}"
+                        f"[WARN] single word crop fail: {image_path} idx={idx} err={e} text={text} quad={quad}"
                     )
                     continue
 

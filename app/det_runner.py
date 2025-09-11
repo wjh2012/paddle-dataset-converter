@@ -50,7 +50,7 @@ def _process_one(
                     label_data.append(label)
                 except Exception as e:
                     print(
-                        f"[WARN] single word crop fail: {image_path} idx={idx} err={e}"
+                        f"[WARN] single det fail: {image_path} idx={idx} err={e} text={text} quad={quad}"
                     )
                     continue
             results = (save_file_name, label_data)
