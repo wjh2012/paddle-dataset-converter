@@ -54,10 +54,11 @@ class FinanceOcrProcessor(LabelDataProcessor):
 
 
 if __name__ == "__main__":
-    mode = "dict"
+    mode = "rec"
     data_dir = r"C:\Users\wjh\Downloads\finance_specialized_ocr\원천데이터"
     label_dir = r"C:\Users\wjh\Downloads\finance_specialized_ocr\라벨링데이터"
     save_dir = r"C:\Users\wjh\Desktop\test"
+    sampler = 1
 
     # 1) 인자 파싱 (args가 있을 때만 덮어쓰기)
     try:
@@ -73,8 +74,10 @@ if __name__ == "__main__":
             label_dir = args.label_dir
         if getattr(args, "save_dir", None):
             save_dir = args.save_dir
+        if getattr(args, "sampler", None):
+            sampler = args.sampler
 
-    print("[DEBUG] merged paths:", mode, data_dir, label_dir, save_dir)
+    print("[DEBUG] merged paths:", mode, data_dir, label_dir, save_dir, sampler)
 
     processor = FinanceOcrProcessor()
 
@@ -97,7 +100,5 @@ if __name__ == "__main__":
         raise ValueError("mode error")
 
     runner.run(
-        data_dir=data_dir,
-        label_dir=label_dir,
-        save_dir=save_dir,
+        data_dir=data_dir, label_dir=label_dir, save_dir=save_dir, sampler=sampler
     )

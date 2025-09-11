@@ -82,31 +82,12 @@ class DetRunner:
         self.data_type = data_type
         self.data_processor = data_processor
 
-    def run(
-        self,
-        data_dir: Optional[str] = None,
-        label_dir: Optional[str] = None,
-        save_dir: Optional[str] = None,
-    ):
-        # 1) 인자 파싱 (args가 있을 때만 덮어쓰기)
-        try:
-            args = get_args()
-        except Exception:
-            args = None
-        if args:
-            if getattr(args, "data_dir", None):
-                data_dir = args.data_dir
-            if getattr(args, "label_dir", None):
-                label_dir = args.label_dir
-            if getattr(args, "save_dir", None):
-                save_dir = args.save_dir
+    def run(self, data_dir, label_dir, save_dir, sampler):
 
-        print("[DEBUG] merged paths:", data_dir, label_dir, save_dir)
-
-        # 2) 경로 유효성 검사
         print("데이터 경로:", data_dir)
         print("라벨 경로:", label_dir)
         print("저장 경로:", save_dir)
+        print("샘플 비율:", sampler)
 
         if label_dir is None:
             print("라벨 경로가 지정되지 않았습니다. (label_dir is None)")
@@ -171,15 +152,15 @@ class DetRunner:
             os.path.splitext(os.path.basename(p))[0]: p for p in image_paths
         }
 
-        tasks = []
+        valid_label_results = []
         missing_image_ids = []
         for pd in label_process_results:
             if not pd:
                 continue
             image_id = pd.get("imageId")
             ipath = image_file_map.get(image_id)
-            if ipath and os.path.exists(ipath):
-                tasks.append((pd, ipath, image_save_dir))
+            if ipath:
+                valid_label_results.append(pd)
             else:
                 missing_image_ids.append(image_id)
 
@@ -188,9 +169,14 @@ class DetRunner:
                 f"[경고] 이미지가 없는 라벨 {len(missing_image_ids)}개 발견. 샘플: {missing_image_ids[:20]}"
             )
 
-        if not tasks:
-            print("[오류] 처리할 작업이 없습니다.")
+        total_valid = len(valid_label_results)
+        if total_valid == 0:
+            print("[오류] 처리 가능한(이미지 존재) 라벨 항목이 없습니다.")
             return
+
+        valid_label_results = [
+            v for idx, v in enumerate(valid_label_results) if idx % sampler == 0
+        ]
 
         image_process_results: List[Tuple[str, List[dict]]] = []
         with ThreadPoolExecutor(max_workers=max_workers) as ex:
@@ -201,9 +187,8 @@ class DetRunner:
                     image_file_map.get(parsed_data["imageId"]),
                     image_save_dir,
                 ): parsed_data
-                for parsed_data in label_process_results
+                for parsed_data in valid_label_results
             }
-
             for fut in tqdm(
                 as_completed(futures),
                 total=len(futures),
@@ -216,9 +201,8 @@ class DetRunner:
 
                 image_process_results.append(res)
 
-        pair_count = min(len(label_paths), len(image_paths))
         print(
-            f"[정보] 성공적으로 처리된 항목: {len(image_process_results)} / {pair_count}"
+            f"[정보] 성공적으로 처리된 항목: {len(image_process_results)} / {len(valid_label_results)}"
         )
 
         # 5) 결과 저장

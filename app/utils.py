@@ -26,4 +26,10 @@ def get_args():
         default=None,
         help="데이터 저장 경로",
     )
+    parser.add_argument(
+        "--sampler",
+        type=int,
+        default=None,
+        help="샘플 비율 N",
+    )
     return parser.parse_args()
