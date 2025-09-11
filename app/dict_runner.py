@@ -44,7 +44,7 @@ class DictRunner:
         self.data_type = data_type
         self.data_processor = data_processor
 
-    def run(self, data_dir, label_dir, save_dir):
+    def run(self, data_dir, label_dir, save_dir, sampler):
 
         print("라벨 경로:", label_dir)
         print("저장 경로:", save_dir)
